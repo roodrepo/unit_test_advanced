@@ -83,7 +83,59 @@ class step2_WithInjectedSimpleValue(UnitTestAction):
 	
 	def final_check(self):
 		step2_InjectDataExample.final_check(self)
-		
+
+
+
+
+
+class relationExample_lvl1_1:
+	pass
+
+class relationExample_lvl1_2:
+	children = ['scenarios.relationExample_lvl3_2']
+
+class relationExample_lvl1_3:
+	pass
+
+class relationExample_lvl1_4:
+	pass
+
+class relationExample_lvl1_5:
+	pass
+
+
+
+
+
+class relationExample_lvl2_1:
+	dependencies = [relationExample_lvl1_1, relationExample_lvl1_2]
+
+class relationExample_lvl2_2:
+	dependencies = [relationExample_lvl1_1, relationExample_lvl1_2]
+
+class relationExample_lvl2_3:
+	dependencies = [relationExample_lvl1_3]
+
+
+
+
+
+class relationExample_lvl3_1:
+	dependencies = [relationExample_lvl2_1, relationExample_lvl2_3, relationExample_lvl1_4]
+
+class relationExample_lvl3_2:
+	pass
+
+class relationExample_lvl3_3:
+	pass
+
+class relationExample_lvl3_4:
+	pass
+
+class relationExample_lvl3_5:
+	pass
+
+
 SCENARIO_1 = [
 	resetWorkspace,
 	step1_checkFileExist_success,

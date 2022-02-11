@@ -56,6 +56,8 @@ class UnitTest:
 	'''
 	def print(self, *args, level = 0):
 		if self.verbose == True:
+			args = list(args)
+			
 			if level == 1:
 				args.insert(0, f'{"":4}')
 			elif level == 2:
@@ -259,19 +261,30 @@ class UnitTest:
 		new_plans = []
 		dependencies_found = False
 		for plan in plans:
-			if hasattr(plan[0], 'Dependencies'):
+			if hasattr(plan[0], 'dependencies'):
 				dependencies_found = True
 				if self.parent_execution_plan == 'all':
-					for dependency in plan[0].Dependencies:
+					for dependency in plan[0].dependencies:
 						dependency = self.import_module(dependency)
-						
 						new_plans.append([dependency] + plan.copy())
+						
+						# Relationship verification
+						if self.verbose == True:
+							if (hasattr(dependency, 'children') == False) or (hasattr(dependency, 'children') and plan[-1] not in dependency.children):
+								self.print(f'{dependency} do not have {plan[-1]} in children', level= 1)
 				else:
 					idx = 0
 					if self.parent_execution_plan == 'random':
-						idx = random.randint(0, len(plan[0].Dependencies))
+						idx = random.randint(0, len(plan[0].dependencies) -1)
 						
-					new_plans.append([plan[0].Dependencies[idx]] + plan.copy())
+					dependency = self.import_module(plan[0].dependencies[idx])
+					new_plans.append([dependency] + plan.copy())
+					
+					# Relationship verification
+					if self.verbose == True:
+						if (hasattr(dependency, 'children') == False) or (hasattr(dependency, 'children') and plan[-1] not in dependency.children):
+							self.print(f'{dependency} do not have {plan[-1]} in children', level= 1)
+							
 			else:
 				new_plans.append(plan.copy())
 				
@@ -289,19 +302,31 @@ class UnitTest:
 		new_plans = []
 		dependencies_found = False
 		for plan in plans:
-			if hasattr(plan[-1], 'Children'):
+			if hasattr(plan[-1], 'children'):
 				dependencies_found = True
 				if self.children_execution_plan == 'all':
-					for child in plan[-1].Children:
+					for child in plan[-1].children:
 						child = self.import_module(child)
-						
 						new_plans.append(plan.copy() + [child])
+						
+						# Relationship verification
+						if self.verbose == True:
+							if (hasattr(child, 'dependencies') == False) or (hasattr(child, 'dependencies') and plan[-1] not in child.dependencies):
+								self.print(f'{child} do not have {plan[-1]} in dependencies', level= 1)
+								
+						
 				else:
 					idx = 0
 					if self.children_execution_plan == 'random':
-						idx = random.randint(0, len(plan[-1].Children))
-						
-					new_plans.append(plan.copy() + [plan[-1].Children[idx]])
+						idx = random.randint(0, len(plan[-1].children) -1)
+					
+					child = self.import_module(plan[-1].children[idx])
+					new_plans.append(plan.copy() + [child])
+					
+					# Relationship verification
+					if self.verbose == True:
+						if (hasattr(child, 'dependencies') == False) or (hasattr(child, 'dependencies') and plan[-1] not in child.dependencies):
+							self.print(f'{child} do not have {plan[-1]} in dependencies', level= 1)
 					
 			else:
 				new_plans.append(plan.copy())
@@ -318,6 +343,8 @@ class UnitTest:
 	'''
 	def createExecutionPlans(self, module):
 		current_plans = [[module]]
+		
+		self.print('Checking relationships...')
 		current_plans = self.getParentPlans(current_plans)
 		current_plans = self.getChildrenPlans(current_plans)
 		

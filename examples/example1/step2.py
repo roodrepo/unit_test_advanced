@@ -34,10 +34,9 @@ def run(UT = None):
 	)
 	f.close()
 	
+	f = open(f'{BASE_DIR}/myfile.txt', 'r')
+	print(f'File content after executing {os.path.basename(__file__)}: "{f.read()}"')
+	f.close()
 	
-	
-run()
-
-f = open(f'{BASE_DIR}/myfile.txt', 'r')
-print(f'File content after executing {os.path.basename(__file__)}: "{f.read()}"')
-f.close()
+if __name__ == '__main__':
+	run()
