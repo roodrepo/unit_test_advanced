@@ -1,3 +1,13 @@
+'''
+	Author  : RoodRepo
+	Git     : https://github.com/roodrepo/unit_test_advanced
+	Contact : roodrepo@gmail.com
+	
+	Title       : Unit Test Advanced
+	Version     : 0.x.x
+	Description : Execute unit tests using the production code - Program multiple scenarios and inject custom data if needed
+'''
+
 from importlib import import_module as sys_import_module
 import random
 
@@ -202,7 +212,6 @@ class UnitTest:
 			self.preventExecutionPlansDuplicates()
 	
 	
-	
 	'''
 		Return all the current execution plans
 	'''
@@ -215,7 +224,8 @@ class UnitTest:
 		Resetting the execution plan list
 	'''
 	def resetExecutionPlans(self):
-		self.execution_plans = []
+		self.execution_plans    = []
+		self.loaded_plans       = []
 	
 	
 	
@@ -253,7 +263,20 @@ class UnitTest:
 		self.execution_plans = final_plans
 		
 	
-	
+	'''
+		If verbose mode is enable, print out if the reversed relation is not found
+	'''
+	def checkRelationship(self, obj, attr, check_obj):
+		if self.verbose == True:
+			if (hasattr(obj, attr) == False):
+				self.print(f'{obj} do not have {check_obj} in {attr}', level= 1)
+			else:
+				_imported_modules = []
+				for _module in getattr(obj, attr):
+					_imported_modules.append(self.import_module(_module))
+					
+				if check_obj not in _imported_modules:
+					self.print(f'{obj} do not have {check_obj} in {attr}', level= 1)
 	'''
 		From a plan, create the parent tree
 	'''
@@ -269,9 +292,8 @@ class UnitTest:
 						new_plans.append([dependency] + plan.copy())
 						
 						# Relationship verification
-						if self.verbose == True:
-							if (hasattr(dependency, 'children') == False) or (hasattr(dependency, 'children') and plan[-1] not in dependency.children):
-								self.print(f'{dependency} do not have {plan[-1]} in children', level= 1)
+						self.checkRelationship(dependency, 'children', plan[-1])
+						
 				else:
 					idx = 0
 					if self.parent_execution_plan == 'random':
@@ -281,10 +303,8 @@ class UnitTest:
 					new_plans.append([dependency] + plan.copy())
 					
 					# Relationship verification
-					if self.verbose == True:
-						if (hasattr(dependency, 'children') == False) or (hasattr(dependency, 'children') and plan[-1] not in dependency.children):
-							self.print(f'{dependency} do not have {plan[-1]} in children', level= 1)
-							
+					self.checkRelationship(dependency, 'children', plan[-1])
+					
 			else:
 				new_plans.append(plan.copy())
 				
@@ -301,7 +321,9 @@ class UnitTest:
 	def getChildrenPlans(self, plans):
 		new_plans = []
 		dependencies_found = False
+		# print(plans)
 		for plan in plans:
+			
 			if hasattr(plan[-1], 'children'):
 				dependencies_found = True
 				if self.children_execution_plan == 'all':
@@ -310,29 +332,24 @@ class UnitTest:
 						new_plans.append(plan.copy() + [child])
 						
 						# Relationship verification
-						if self.verbose == True:
-							if (hasattr(child, 'dependencies') == False) or (hasattr(child, 'dependencies') and plan[-1] not in child.dependencies):
-								self.print(f'{child} do not have {plan[-1]} in dependencies', level= 1)
-								
+						self.checkRelationship(child, 'dependencies', plan[-1])
+						
 						
 				else:
 					idx = 0
 					if self.children_execution_plan == 'random':
 						idx = random.randint(0, len(plan[-1].children) -1)
-					
+						
 					child = self.import_module(plan[-1].children[idx])
 					new_plans.append(plan.copy() + [child])
 					
 					# Relationship verification
-					if self.verbose == True:
-						if (hasattr(child, 'dependencies') == False) or (hasattr(child, 'dependencies') and plan[-1] not in child.dependencies):
-							self.print(f'{child} do not have {plan[-1]} in dependencies', level= 1)
-					
+					self.checkRelationship(child, 'dependencies', plan[-1])
 			else:
 				new_plans.append(plan.copy())
 				
 		if dependencies_found == True:
-			plans = self.getParentPlans(new_plans)
+			plans = self.getChildrenPlans(new_plans)
 			
 		return plans
 	
@@ -349,3 +366,4 @@ class UnitTest:
 		current_plans = self.getChildrenPlans(current_plans)
 		
 		self.execution_plans += current_plans
+	

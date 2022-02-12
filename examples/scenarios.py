@@ -89,7 +89,7 @@ class step2_WithInjectedSimpleValue(UnitTestAction):
 
 
 class relationExample_lvl1_1:
-	pass
+	children = ['scenarios.relationExample_lvl2_1', 'scenarios.relationExample_lvl2_2']
 
 class relationExample_lvl1_2:
 	children = ['scenarios.relationExample_lvl3_2']
@@ -108,7 +108,8 @@ class relationExample_lvl1_5:
 
 
 class relationExample_lvl2_1:
-	dependencies = [relationExample_lvl1_1, relationExample_lvl1_2]
+	dependencies    = [relationExample_lvl1_1, relationExample_lvl1_2]
+	children        = ['scenarios.relationExample_lvl3_1', 'scenarios.relationExample_lvl3_2']
 
 class relationExample_lvl2_2:
 	dependencies = [relationExample_lvl1_1, relationExample_lvl1_2]
@@ -124,7 +125,7 @@ class relationExample_lvl3_1:
 	dependencies = [relationExample_lvl2_1, relationExample_lvl2_3, relationExample_lvl1_4]
 
 class relationExample_lvl3_2:
-	pass
+	dependencies = [relationExample_lvl2_1]
 
 class relationExample_lvl3_3:
 	pass
