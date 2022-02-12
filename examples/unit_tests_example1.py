@@ -17,7 +17,7 @@ def run():
 		parent_execution_plan   = 'random', # Default is 'all', other accepted values are 'all', 'main', or 'random'
 		children_execution_plan = 'all', # Default is 'all', other accepted values are 'all', 'main', or 'random'
 		count_limit_identify_infinite_loop = 2, # Default is 2
-		verbose                 = True, # Default is False
+		verbose                 = False, # Default is False
 	)
 	
 	# What parameters to pass in the list

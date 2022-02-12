@@ -13,9 +13,9 @@ import random
 
 class UnitTest:
 	
-	_memory          : dict = {}
-	_execution_plans : list = []
-	_loaded_plans    : list = []
+	_memory                  : dict = {}
+	_execution_plans         : list = []
+	_loaded_plans            : list = []
 	
 	_verbose                 : bool
 	_is_enabled              : bool
@@ -41,11 +41,11 @@ class UnitTest:
 		'''
 		
 		self.updateSettings(**{
-			'_verbose'                               : verbose,
-			'_is_enabled'                            : is_enabled,
-			'_parent_execution_plan'                 : parent_execution_plan,
-			'_children_execution_plan'               : children_execution_plan,
-			'_count_limit_identify_infinite_loop'    : count_limit_identify_infinite_loop,
+			'verbose'                               : verbose,
+			'is_enabled'                            : is_enabled,
+			'parent_execution_plan'                 : parent_execution_plan,
+			'children_execution_plan'               : children_execution_plan,
+			'count_limit_identify_infinite_loop'    : count_limit_identify_infinite_loop,
 		})
 		
 		
@@ -63,7 +63,7 @@ class UnitTest:
 	
 	
 	
-	def print(self, *args, level = 0):
+	def _print(self, *args, level = 0):
 		'''
 			Print out texts when verbose mode is enabled
 		'''
@@ -84,7 +84,7 @@ class UnitTest:
 	
 	
 	
-	def importModule(self, module):
+	def _importModule(self, module):
 		'''
 			Dynamically import modules if a string is passed
 		'''
@@ -101,13 +101,13 @@ class UnitTest:
 	
 	
 	
-	def resetCounter(self):
+	def _resetCounter(self):
 		'''
 			For each execution plan, resetting both the counter and memory
 		'''
 		self._script_counter = {}
 		
-	def resetMemory(self):
+	def _resetMemory(self):
 		self._memory         = {}
 	
 	
@@ -118,6 +118,7 @@ class UnitTest:
 			function: The actual function to execute in case the function-id does not exists
 			*args and **kwargs are the argument to pass to both the fake function and real function
 		'''
+		
 		if self._is_enabled == True and hasattr(self._pooltest, id):
 			return getattr(self._pooltest, id)(*args, **kwargs)
 		else:
@@ -129,24 +130,25 @@ class UnitTest:
 		'''
 			Simply return the passed value. Useful when just a value needs to be faked out during unit test
 		'''
+		
 		return value
 	
 	
-	def checkInfiniteLoop(self, module_name):
+	def _checkInfiniteLoop(self, plans_list):
 		'''
 			Checks how many time a class is called and raise an error when the limit "count_limit_identify_infinite_loop" is reached
 		'''
-		if module_name  not in self._script_counter:
-			self._script_counter[module_name] = 0
-			
-		self._script_counter[module_name] += 1
 		
-		if self._script_counter[module_name] >= self._count_limit_identify_infinite_loop:
-			raise Exception(f'Possible infinite loop identified on {module_name}')
+		for module_list in plans_list:
+			module_name_list = [module.__name__ for module in module_list]
+			module_over_the_limit = {module_name: True if module_name_list.count(module_name) >= self._count_limit_identify_infinite_loop else False for module_name in module_name_list}
+			for module_name, is_limit_reached in module_over_the_limit.items():
+				if is_limit_reached == True:
+					raise Exception(f'Possible infinite loop identified on {module_name}')
 	
 	
 	
-	def run(self, module):
+	def _run(self, module):
 		'''
 			Executing all the main functions of a class
 			pooltest        : Storing the current class executed for the unit test. Passing memory to access previous stored data
@@ -156,32 +158,26 @@ class UnitTest:
 		'''
 		
 		if self._is_enabled == True:
-			module = self.importModule(module)
-			
-			init_params = {}
+			module = self._importModule(module)
+
+			init_params = {'memory': self._memory}
 			if hasattr(self._pooltest, 'init_params'):
-				init_params = module.init_params
+				init_params = {**init_params, **module.init_params}
 				
 			self._pooltest = module(**init_params)
-			module_has_memory = False
-			
-			if hasattr(self._pooltest, 'setMemory'):
-				self._pooltest.setMemory(memory = self._memory)
-				module_has_memory = True
-				
+
 			params = {}
 			if hasattr(self._pooltest, 'trigger_params'):
 				params = self._pooltest.trigger_params
-				
+			
 			if hasattr(module, 'trigger'):
 				module.trigger(UT= self, **params)
-				
+			
 			if hasattr(self._pooltest, 'final_check'):
 				self._pooltest.final_check()
 				
 			# Updating the memory attribute
-			if module_has_memory == True:
-				self._memory = self._pooltest.memory
+			self._memory = self._pooltest.memory
 	
 	
 	
@@ -191,10 +187,10 @@ class UnitTest:
 		'''
 		
 		if self._is_enabled == True:
-			self.resetMemory()
-			self.print('Running execution plan: ', execution_plan)
+			self._resetMemory()
+			self._print('Running execution plan: ', execution_plan)
 			for module in execution_plan:
-				self.run(module)
+				self._run(module)
 	
 	
 	
@@ -204,9 +200,10 @@ class UnitTest:
 			Preparing the plans according to the settings and list passed.
 			This function also prepare the execution tree for parents and children possibilities
 		'''
+		
 		if self._is_enabled == True:
 			for unit_test in list_unit_tests:
-				self.resetCounter()
+				self._resetCounter()
 				if isinstance(unit_test, list):
 					self._execution_plans.append(unit_test)
 				else:
@@ -220,6 +217,7 @@ class UnitTest:
 		'''
 			Return all the current execution plans
 		'''
+		
 		return self._execution_plans
 	
 	
@@ -228,6 +226,7 @@ class UnitTest:
 		'''
 			Resetting the execution plan list
 		'''
+		
 		self._execution_plans    = []
 		self._loaded_plans       = []
 	
@@ -238,6 +237,7 @@ class UnitTest:
 			Entry point to start the unit tests
 			Either prepare a list and execute or pass the list as argument to perform both actions at once
 		'''
+		
 		if self._is_enabled == True:
 			
 			if list_unit_tests != None:
@@ -254,6 +254,7 @@ class UnitTest:
 		'''
 			Removing duplicated plans
 		'''
+		
 		final_plans = []
 		for plan in self._execution_plans:
 			_modules_in_plan = []
@@ -271,21 +272,23 @@ class UnitTest:
 		'''
 			If verbose mode is enable, print out if the reversed relation is not found
 		'''
+		
 		if self._verbose == True:
 			if (hasattr(obj, attr) == False):
-				self.print(f'{obj} do not have {check_obj} in {attr}', level= 1)
+				self._print(f'{obj} do not have {check_obj} in {attr}', level= 1)
 			else:
 				_imported_modules = []
 				for _module in getattr(obj, attr):
-					_imported_modules.append(self.importModule(_module))
+					_imported_modules.append(self._importModule(_module))
 					
 				if check_obj not in _imported_modules:
-					self.print(f'{obj} do not have {check_obj} in {attr}', level= 1)
+					self._print(f'{obj} do not have {check_obj} in {attr}', level= 1)
 
 	def getParentPlans(self, plans):
 		'''
 			From a plan, create the parent tree
 		'''
+		
 		new_plans = []
 		dependencies_found = False
 		for plan in plans:
@@ -293,7 +296,7 @@ class UnitTest:
 				dependencies_found = True
 				if self._parent_execution_plan == 'all':
 					for dependency in plan[0].dependencies:
-						dependency = self.importModule(dependency)
+						dependency = self._importModule(dependency)
 						new_plans.append([dependency] + plan.copy())
 						
 						# Relationship verification
@@ -304,7 +307,7 @@ class UnitTest:
 					if self._parent_execution_plan == 'random':
 						idx = random.randint(0, len(plan[0].dependencies) -1)
 						
-					dependency = self.importModule(plan[0].dependencies[idx])
+					dependency = self._importModule(plan[0].dependencies[idx])
 					new_plans.append([dependency] + plan.copy())
 					
 					# Relationship verification
@@ -313,6 +316,8 @@ class UnitTest:
 			else:
 				new_plans.append(plan.copy())
 				
+		self._checkInfiniteLoop(new_plans)
+		
 		if dependencies_found == True:
 			plans = self.getParentPlans(new_plans)
 			
@@ -324,6 +329,7 @@ class UnitTest:
 		'''
 			From a plan, create the children tree
 		'''
+		
 		new_plans = []
 		dependencies_found = False
 		# print(plans)
@@ -333,7 +339,7 @@ class UnitTest:
 				dependencies_found = True
 				if self._children_execution_plan == 'all':
 					for child in plan[-1].children:
-						child = self.importModule(child)
+						child = self._importModule(child)
 						new_plans.append(plan.copy() + [child])
 						
 						# Relationship verification
@@ -345,14 +351,16 @@ class UnitTest:
 					if self._children_execution_plan == 'random':
 						idx = random.randint(0, len(plan[-1].children) -1)
 						
-					child = self.importModule(plan[-1].children[idx])
+					child = self._importModule(plan[-1].children[idx])
 					new_plans.append(plan.copy() + [child])
 					
 					# Relationship verification
 					self.checkRelationship(child, 'dependencies', plan[-1])
 			else:
 				new_plans.append(plan.copy())
-				
+			
+		self._checkInfiniteLoop(new_plans)
+		
 		if dependencies_found == True:
 			plans = self.getChildrenPlans(new_plans)
 			
@@ -364,9 +372,10 @@ class UnitTest:
 		'''
 			Manage and put together the parent tree and children tree
 		'''
+		
 		current_plans = [[module]]
 		
-		self.print('Checking relationships...')
+		self._print('Checking relationships...')
 		current_plans = self.getParentPlans(current_plans)
 		current_plans = self.getChildrenPlans(current_plans)
 		

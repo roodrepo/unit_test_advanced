@@ -28,7 +28,7 @@ class step1_checkFileExist_success(UnitTestAction):
 		super().__init__(**kwargs)
 		
 		self.memory = {
-			'print_memory_message'  : False,
+			'print_memory_message'  : True,
 			'value_in_memory'       : '######### This value is passed along all the classes of a plan and can be modified at any time'
 		}
 		
@@ -40,8 +40,9 @@ class step2_InjectDataExample(UnitTestAction):
 	
 	trigger = step2_run
 	
-	def __init__(self, **kwargs):
-		super().__init__(**kwargs)
+	# Init method is not required here
+	# def __init__(self, **kwargs):
+	# 	super().__init__(**kwargs)
 		
 	def fakeApiCall(self, **kwargs):
 		return 'fake api call'
@@ -55,14 +56,16 @@ class step3_checkFileContent_Fail(UnitTestAction):
 	
 	trigger = step3_run
 	
-	def __init__(self, **kwargs):
-		super().__init__(**kwargs)
+	# Init method is not required here
+	# def __init__(self, **kwargs):
+	# 	super().__init__(**kwargs)
 		
 	def final_check(self):
 		
+		expected_content = 'Awesome package !!'
 		f = open(f'{BASE_DIR}/{FILE_NAME}', 'r')
-		if f.read() != 'Awesome package !!':
-			raise BaseException(f'Issue with file content')
+		if f.read() != expected_content:
+			raise BaseException(f'Issue with file content. Expected content is "{expected_content}"')
 
 '''
 	This class doesn't have the method "fakeApiCall", The value in the file at the end is "actual api call"
