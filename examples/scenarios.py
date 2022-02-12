@@ -21,6 +21,7 @@ class resetWorkspace(UnitTestAction):
 		
 class step1_checkFileExist_success(UnitTestAction):
 	
+	# Function to execute to run the action to test
 	trigger = step1_run
 	
 	def __init__(self, **kwargs):

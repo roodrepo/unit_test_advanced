@@ -22,7 +22,7 @@ def run():
 	
 	# What parameters to pass in the list
 	UT.execute([
-		# A unit test class. The relationship tree will get build based on the settings "parent_execution_plan" and "children_execution_plan"
+		# When a single test-class is passed, the relationship tree will get build based on the settings "parent_execution_plan" and "children_execution_plan"
 		resetWorkspace,
 		# A list of unit test classes
 		[
