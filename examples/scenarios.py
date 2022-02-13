@@ -21,17 +21,18 @@ class resetWorkspace(UnitTestAction):
 		
 class step1_checkFileExist_success(UnitTestAction):
 	
+	# Function to execute to run the action to test
 	trigger = step1_run
 	
 	def __init__(self, **kwargs):
 		super().__init__(**kwargs)
 		
 		self.memory = {
-			'print_memory_message'  : False,
+			'print_memory_message'  : True,
 			'value_in_memory'       : '######### This value is passed along all the classes of a plan and can be modified at any time'
 		}
 		
-	def final_check(self):
+	def finalCheck(self):
 		if os.path.exists(f'{BASE_DIR}/{FILE_NAME}') == False:
 			raise BaseException(f'The file {FILE_NAME} is missing')
 
@@ -39,13 +40,14 @@ class step2_InjectDataExample(UnitTestAction):
 	
 	trigger = step2_run
 	
-	def __init__(self, **kwargs):
-		super().__init__(**kwargs)
+	# Init method is not required here
+	# def __init__(self, **kwargs):
+	# 	super().__init__(**kwargs)
 		
 	def fakeApiCall(self, **kwargs):
 		return 'fake api call'
 	
-	def final_check(self):
+	def finalCheck(self):
 		f = open(f'{BASE_DIR}/{FILE_NAME}', 'r')
 		if 'api' not in f.read():
 			raise BaseException(f'String "api" not found')
@@ -54,14 +56,16 @@ class step3_checkFileContent_Fail(UnitTestAction):
 	
 	trigger = step3_run
 	
-	def __init__(self, **kwargs):
-		super().__init__(**kwargs)
+	# Init method is not required here
+	# def __init__(self, **kwargs):
+	# 	super().__init__(**kwargs)
 		
-	def final_check(self):
+	def finalCheck(self):
 		
+		expected_content = 'Awesome package !!'
 		f = open(f'{BASE_DIR}/{FILE_NAME}', 'r')
-		if f.read() != 'Awesome package !!':
-			raise BaseException(f'Issue with file content')
+		if f.read() != expected_content:
+			raise BaseException(f'Issue with file content. Expected content is "{expected_content}"')
 
 '''
 	This class doesn't have the method "fakeApiCall", The value in the file at the end is "actual api call"
@@ -78,18 +82,18 @@ class step2_WithInjectedSimpleValue(UnitTestAction):
 			print(self.memory['value_in_memory'])
 	
 	# Without this method, the program gets the actual value without injection
-	def inject_value(self, **kwargs):
+	def injectValue(self, **kwargs):
 	    return True
 	
-	def final_check(self):
-		step2_InjectDataExample.final_check(self)
+	def finalCheck(self):
+		step2_InjectDataExample.finalCheck(self)
 
 
 
 
 
 class relationExample_lvl1_1:
-	pass
+	children = ['scenarios.relationExample_lvl2_1', 'scenarios.relationExample_lvl2_2']
 
 class relationExample_lvl1_2:
 	children = ['scenarios.relationExample_lvl3_2']
@@ -108,7 +112,8 @@ class relationExample_lvl1_5:
 
 
 class relationExample_lvl2_1:
-	dependencies = [relationExample_lvl1_1, relationExample_lvl1_2]
+	dependencies    = [relationExample_lvl1_1, relationExample_lvl1_2]
+	children        = ['scenarios.relationExample_lvl3_1', 'scenarios.relationExample_lvl3_2']
 
 class relationExample_lvl2_2:
 	dependencies = [relationExample_lvl1_1, relationExample_lvl1_2]
@@ -124,7 +129,7 @@ class relationExample_lvl3_1:
 	dependencies = [relationExample_lvl2_1, relationExample_lvl2_3, relationExample_lvl1_4]
 
 class relationExample_lvl3_2:
-	pass
+	dependencies = [relationExample_lvl2_1]
 
 class relationExample_lvl3_3:
 	pass
