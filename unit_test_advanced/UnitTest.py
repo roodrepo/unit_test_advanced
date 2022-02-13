@@ -154,7 +154,7 @@ class UnitTest:
 			pooltest        : Storing the current class executed for the unit test. Passing memory to access previous stored data
 			trigger_params  : Parameters (dict) to pass from the class to the triggered function
 			trigger         : Action (function) to trigger for the unit test
-			final_check     : Final check after the action is complete
+			finalCheck     : Final check after the action is complete
 		'''
 		
 		if self._is_enabled == True:
@@ -173,15 +173,16 @@ class UnitTest:
 			if hasattr(module, 'trigger'):
 				module.trigger(UT= self, **params)
 			
-			if hasattr(self._pooltest, 'final_check'):
-				self._pooltest.final_check()
+			if hasattr(self._pooltest, 'finalCheck'):
+				self._pooltest.finalCheck()
 				
 			# Updating the memory attribute
-			self._memory = self._pooltest.memory
+			if hasattr(self._pooltest, 'memory'):
+				self._memory = self._pooltest.memory
 	
 	
 	
-	def runExecutionPlan(self, execution_plan):
+	def _runExecutionPlan(self, execution_plan):
 		'''
 			Running an execution plan
 		'''
@@ -195,7 +196,7 @@ class UnitTest:
 	
 	
 	
-	def preparePlans(self, list_unit_tests):
+	def preparePlans(self, list_unit_tests = []):
 		'''
 			Preparing the plans according to the settings and list passed.
 			This function also prepare the execution tree for parents and children possibilities
@@ -207,9 +208,9 @@ class UnitTest:
 				if isinstance(unit_test, list):
 					self._execution_plans.append(unit_test)
 				else:
-					self.createExecutionPlans(unit_test)
+					self._createExecutionPlans(unit_test)
 					
-			self.preventExecutionPlansDuplicates()
+			self._preventExecutionPlansDuplicates()
 	
 	
 	
@@ -244,13 +245,13 @@ class UnitTest:
 				self.preparePlans(list_unit_tests)
 				
 			for ep in self._execution_plans:
-				self.runExecutionPlan(ep)
+				self._runExecutionPlan(ep)
 				
 			self.resetExecutionPlans()
 			
 			
 			
-	def preventExecutionPlansDuplicates(self):
+	def _preventExecutionPlansDuplicates(self):
 		'''
 			Removing duplicated plans
 		'''
@@ -268,7 +269,7 @@ class UnitTest:
 		self._execution_plans = final_plans
 		
 	
-	def checkRelationship(self, obj, attr, check_obj):
+	def _checkRelationship(self, obj, attr, check_obj):
 		'''
 			If verbose mode is enable, print out if the reversed relation is not found
 		'''
@@ -284,7 +285,7 @@ class UnitTest:
 				if check_obj not in _imported_modules:
 					self._print(f'{obj} do not have {check_obj} in {attr}', level= 1)
 
-	def getParentPlans(self, plans):
+	def _getParentPlans(self, plans):
 		'''
 			From a plan, create the parent tree
 		'''
@@ -300,7 +301,7 @@ class UnitTest:
 						new_plans.append([dependency] + plan.copy())
 						
 						# Relationship verification
-						self.checkRelationship(dependency, 'children', plan[-1])
+						self._checkRelationship(dependency, 'children', plan[-1])
 						
 				else:
 					idx = 0
@@ -311,7 +312,7 @@ class UnitTest:
 					new_plans.append([dependency] + plan.copy())
 					
 					# Relationship verification
-					self.checkRelationship(dependency, 'children', plan[-1])
+					self._checkRelationship(dependency, 'children', plan[-1])
 					
 			else:
 				new_plans.append(plan.copy())
@@ -319,13 +320,13 @@ class UnitTest:
 		self._checkInfiniteLoop(new_plans)
 		
 		if dependencies_found == True:
-			plans = self.getParentPlans(new_plans)
+			plans = self._getParentPlans(new_plans)
 			
 		return plans
 	
 	
 	
-	def getChildrenPlans(self, plans):
+	def _getChildrenPlans(self, plans):
 		'''
 			From a plan, create the children tree
 		'''
@@ -343,7 +344,7 @@ class UnitTest:
 						new_plans.append(plan.copy() + [child])
 						
 						# Relationship verification
-						self.checkRelationship(child, 'dependencies', plan[-1])
+						self._checkRelationship(child, 'dependencies', plan[-1])
 						
 						
 				else:
@@ -355,20 +356,20 @@ class UnitTest:
 					new_plans.append(plan.copy() + [child])
 					
 					# Relationship verification
-					self.checkRelationship(child, 'dependencies', plan[-1])
+					self._checkRelationship(child, 'dependencies', plan[-1])
 			else:
 				new_plans.append(plan.copy())
 			
 		self._checkInfiniteLoop(new_plans)
 		
 		if dependencies_found == True:
-			plans = self.getChildrenPlans(new_plans)
+			plans = self._getChildrenPlans(new_plans)
 			
 		return plans
 	
 	
 	
-	def createExecutionPlans(self, module):
+	def _createExecutionPlans(self, module):
 		'''
 			Manage and put together the parent tree and children tree
 		'''
@@ -376,8 +377,8 @@ class UnitTest:
 		current_plans = [[module]]
 		
 		self._print('Checking relationships...')
-		current_plans = self.getParentPlans(current_plans)
-		current_plans = self.getChildrenPlans(current_plans)
+		current_plans = self._getParentPlans(current_plans)
+		current_plans = self._getChildrenPlans(current_plans)
 		
 		self._execution_plans += current_plans
 	

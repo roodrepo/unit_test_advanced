@@ -32,7 +32,7 @@ class step1_checkFileExist_success(UnitTestAction):
 			'value_in_memory'       : '######### This value is passed along all the classes of a plan and can be modified at any time'
 		}
 		
-	def final_check(self):
+	def finalCheck(self):
 		if os.path.exists(f'{BASE_DIR}/{FILE_NAME}') == False:
 			raise BaseException(f'The file {FILE_NAME} is missing')
 
@@ -47,7 +47,7 @@ class step2_InjectDataExample(UnitTestAction):
 	def fakeApiCall(self, **kwargs):
 		return 'fake api call'
 	
-	def final_check(self):
+	def finalCheck(self):
 		f = open(f'{BASE_DIR}/{FILE_NAME}', 'r')
 		if 'api' not in f.read():
 			raise BaseException(f'String "api" not found')
@@ -60,7 +60,7 @@ class step3_checkFileContent_Fail(UnitTestAction):
 	# def __init__(self, **kwargs):
 	# 	super().__init__(**kwargs)
 		
-	def final_check(self):
+	def finalCheck(self):
 		
 		expected_content = 'Awesome package !!'
 		f = open(f'{BASE_DIR}/{FILE_NAME}', 'r')
@@ -82,11 +82,11 @@ class step2_WithInjectedSimpleValue(UnitTestAction):
 			print(self.memory['value_in_memory'])
 	
 	# Without this method, the program gets the actual value without injection
-	def inject_value(self, **kwargs):
+	def injectValue(self, **kwargs):
 	    return True
 	
-	def final_check(self):
-		step2_InjectDataExample.final_check(self)
+	def finalCheck(self):
+		step2_InjectDataExample.finalCheck(self)
 
 
 

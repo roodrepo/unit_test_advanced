@@ -13,14 +13,14 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 def imagineThisIsAnApiCall(myParam):
 	return 'actual api call'
 
-# For each entry point, the function must accept the UT parameter and initialize it when Null
+# For each entry point, the function must accept the parameter UT
 @initUT
 def run(UT):
 	
 	f = open(f'{BASE_DIR}/myfile.txt', 'w+')
 	
 	is_injected = UT.inject(
-		'inject_value',
+		'injectValue',
 		UT.returnValue,
 		value= True
 	)

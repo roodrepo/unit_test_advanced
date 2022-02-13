@@ -30,7 +30,7 @@ The easiest way to install the Unit Test Advanced library is to use a package ma
 `pip install unit-test-advanced`
 
 
-## Usage
+## Prepare the tests
 
 Examples can be found [here](https://github.com/roodrepo/unit_test_advanced/tree/v0.1.1/examples)
 
@@ -68,14 +68,18 @@ class step1_checkFileExist_success(UnitTestAction):
 
 | Attribute  | Type | Required | Info |
 |:-:|:-:|:-:|:-|
-| `trigger`  | Function  | no | * Action to execute to run the action to test. * |
-| `dependencies`  | List  | no | * Previous test-classes required to run the current test (N-1) * |
-| `children`  | List  | no | * Next test-classes to run after the current test (N+1) * |
-| `memory`  | Dict  | no | * Passing values from one test action to the next ones within the current execution plan * |
+| `init_params`  | dict  | no | * Kwargs to pass to the test-class when instantiate * |
+| `trigger_params`  | dict  | no | * Kwargs to pass to trigger when executed * |
+| `trigger`  | function  | no | * Action to execute to run the action to test. * |
+| `dependencies`  | list  | no | * Previous test-classes required to run the current test (N-1) * |
+| `children`  | list  | no | * Next test-classes to run after the current test (N+1) * |
+| `memory`  | dict  | no | * Passing values from one test action to the next ones within the current execution plan * |
+| `finalCheck`  | method  | no | * Final method called when the action is complete * |
+
 ** Make sure not to execute function while passing it to "trigger":  **
 `trigger = step1_run`
 ** NOT **
-`trigger = step1_run()`
+`trigger = step1_run(*args, **kwargs)`
 
 #### Create relationships
 ```python
@@ -88,7 +92,7 @@ class relationExample_lvl1_2:
 	
 	
 
-	
+
 class relationExample_lvl2_1:
 	dependencies  = [relationExample_lvl1_1, relationExample_lvl1_2]
 	children           = ['scenarios.relationExample_lvl3_1']
@@ -98,8 +102,13 @@ class relationExample_lvl2_2:
 	
 	
 	
-class relationExample_lvl3_1:
+	
+# Extending the class "UnitTestAction" gives more features such as memory
+class relationExample_lvl3_1(UnitTestAction):
 	dependencies = [relationExample_lvl2_1]
+	
+		def __init__(self, **kwargs):
+			super().__init__(**kwargs)
 ```
 
 ### Execute your scenarios
@@ -130,22 +139,22 @@ UT.execute([
 | Attribute | Description |
 |:-:|:-|
 | `__init__`  | |
-| `updateSettings`  | |
+| `updateSettings`  | * Update the settings * |
 | `inject`  | * Inject data in the function triggered by the test-class * |
 | `returnValue`  | * Used when the value to inject is a single value * |
 | `preparePlans`  | * Preparing all scenarios according to the settings and list passed * |
 | `getExecutionPlans`  | * Get all the execution plans prepared * |
-| `resetExecutionPlans`  |  |
+| `resetExecutionPlans`  | * Reset all the prepared execution plans * |
 | `execute`  | * Execute all the unit-tests from the list * |
 
 ####\_\_init\_\_ and updateSettings
 | Argument | Type | Default | Description |
 |:-:|:-:|:-:|:-|
-| `is_enabled` | Bool | False | * Set to "True" ** only ** when used to run the unit-tests * |
-| `parent_execution_plan` | Str | all | * Algorithm to create the branches from on the dependencies side. Accepted values are "all", "main", and "random" * |
-| `children_execution_plan` | Str | all | * Algorithm to create the branches from on the children side. Accepted values are "all", "main", and "random" * |
-| `count_limit_identify_infinite_loop` | Int | 2 | * Max amount to execute a test-class within an execution plan * |
-| `verbose` | Bool | False | * Display information when running * |
+| `is_enabled` | bool | False | * Set to "True" ** only ** when used to run the unit-tests * |
+| `parent_execution_plan` | str | all | * Algorithm to create the branches from on the dependencies side. Accepted values are "all", "main", and "random" * |
+| `children_execution_plan` | str | all | * Algorithm to create the branches from on the children side. Accepted values are "all", "main", and "random" * |
+| `count_limit_identify_infinite_loop` | int | 2 | * Max amount to execute a test-class within an execution plan * |
+| `verbose` | bool | False | * Display information when running * |
 
 Execution plan algorithms:
 - ** all ** : All possible execution plans are prepared
@@ -155,7 +164,54 @@ Execution plan algorithms:
 ####inject
 | Argument | Type | Default | Description |
 |:-:|:-:|:-:|:-|
-| `id` | Bool |  | * Method to execute within the test-class to override the original function * |
-| `function` | Str |  | * Function to execute if the override method is not found within the test-class * |
-| `*args` | Str |  | * Arguments to pass to the function and the override method * |
-| `**kwargs` | Str |  | * Arguments to pass to the function and the override method * |
+| `id` | bool |  | * Method to execute within the test-class to override the original function * |
+| `function` | str |  | * Function to execute if the override method is not found within the test-class * |
+| `*args` | str |  | * Arguments to pass to the function and the override method * |
+| `**kwargs` | str |  | * Arguments to pass to the function and the override method * |
+
+####returnValue
+| Argument | Type | Default | Description |
+|:-:|:-:|:-:|:-|
+| `value` |  |  | * Return the value passed * |
+
+####preparePlans
+| Argument | Type | Default | Description |
+|:-:|:-:|:-:|:-|
+| `list_unit_tests` | list | [] | * Prepare all the execution plans * |
+
+####getExecutionPlans
+Return all the execution plans ready to be executed
+
+####resetExecutionPlans
+Reset all the prepared execution plans
+
+####execute
+| Argument | Type | Default | Description |
+|:-:|:-:|:-:|:-|
+| `list_unit_tests` | list | None | * Execute the prepared unit tests. The method "preparePlans" is not previously required if the list of plans is passed here.  * |
+
+## Prepare the actions
+####With decorators
+```python
+from unit_test_advanced.functools import initUT
+
+# For each entry point, the function must accept the parameter UT
+@initUT
+def run(UT):
+	pass
+
+if __name__ == '__main__':
+	run()
+```
+
+####Without decorators
+```python
+from unit_test_advanced.UnitTest import UnitTest
+
+# For each entry point, the function must accept the parameter UT
+def run(UT = None):
+	UT = UT if type(UT) == type(UnitTest) else UnitTest()
+
+if __name__ == '__main__':
+	run()
+```

@@ -10,12 +10,10 @@ class UnitTestAction(object):
 	
 	@property
 	def memory(self):
-
 		return self._memory
 	
 	@memory.setter
 	def memory(self, memory):
-		
 		self._memory = {
 			**self._memory,
 			**memory,

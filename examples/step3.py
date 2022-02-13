@@ -7,7 +7,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 	Writing some content in the file created from step1
 '''
 
-# For each entry point, the function must accept the UT parameter and initialize it when Null
+# For each entry point, the function must accept the parameter UT
 @initUT
 def run(UT):
 	
