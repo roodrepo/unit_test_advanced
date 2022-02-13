@@ -1,4 +1,4 @@
-import os
+import os, json
 from unit_test_advanced.functools import initUT
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -11,7 +11,9 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 def imagineThisIsAnApiCall(myParam):
-	return 'actual api call'
+	return json.dumps({
+		'result': 'success'
+	})
 
 # For each entry point, the function must accept the parameter UT
 @initUT

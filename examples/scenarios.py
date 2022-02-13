@@ -1,5 +1,5 @@
 from unit_test_advanced.UnitTestAction import UnitTestAction
-import os, sys
+import os, sys, json
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -28,7 +28,7 @@ class step1_checkFileExist_success(UnitTestAction):
 		super().__init__(**kwargs)
 		
 		self.memory = {
-			'print_memory_message'  : True,
+			'print_memory_message'  : False,
 			'value_in_memory'       : '######### This value is passed along all the classes of a plan and can be modified at any time'
 		}
 		
@@ -45,12 +45,14 @@ class step2_InjectDataExample(UnitTestAction):
 	# 	super().__init__(**kwargs)
 		
 	def fakeApiCall(self, **kwargs):
-		return 'fake api call'
+		return json.dumps({
+			'result': 'ok'
+		})
 	
 	def finalCheck(self):
 		f = open(f'{BASE_DIR}/{FILE_NAME}', 'r')
-		if 'api' not in f.read():
-			raise BaseException(f'String "api" not found')
+		if 'result' not in f.read():
+			raise BaseException(f'Content invalid')
 		
 class step3_checkFileContent_Fail(UnitTestAction):
 	

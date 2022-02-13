@@ -215,3 +215,17 @@ def run(UT = None):
 if __name__ == '__main__':
 	run()
 ```
+
+## My first unit test
+In production, you have two actions triggered serially: [Step1](https://github.com/roodrepo/unit_test_advanced/blob/v0.1.0-dev/examples/step1.py) and [Step2](https://github.com/roodrepo/unit_test_advanced/blob/v0.1.0-dev/examples/step2.py).
+For this example, we will keep things simple:
+
+| Action | Result | Verification  |
+|:-:|:-:|:-:|
+| `python step1.py` | File "myfile.txt" created | Does the file "myfile.txt" exist? |
+| `python step2.py` | Add the string "actual api call" in the file | Does the file contains the string "api"? |
+
+
+
+
+

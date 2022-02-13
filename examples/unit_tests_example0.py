@@ -4,7 +4,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 sys.path.append(BASE_DIR)
 
-from scenarios import resetWorkspace, step1_checkFileExist_success, step2_WithInjectedSimpleValue
+from scenarios import resetWorkspace, step1_checkFileExist_success, step2_InjectDataExample, step2_WithInjectedSimpleValue
 
 
 def run():
@@ -21,7 +21,7 @@ def run():
 		[
 			resetWorkspace,
 			step1_checkFileExist_success,
-			step2_WithInjectedSimpleValue, # This test contains an example of how to use the memory
+			step2_InjectDataExample, # This test contains an example of how to use the memory
 		],
 	])
 	
