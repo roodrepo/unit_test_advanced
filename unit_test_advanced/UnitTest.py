@@ -5,7 +5,7 @@
 	
 	Title       : Unit Test Advanced
 	Version     : 0.1.x
-	Description : Execute unit tests using the production code - Program multiple scenarios and inject custom data if needed
+	Description : Execute unit tests using the production code - Program multiple scenarios and override custom data if needed
 '''
 
 from importlib import import_module as sys_import_module
@@ -112,7 +112,7 @@ class UnitTest:
 	
 	
 	
-	def inject(self, id, function, *args, **kwargs):
+	def override(self, id, function, *args, **kwargs):
 		'''
 			id: The function to execute within the class if that function exists
 			function: The actual function to execute in case the function-id does not exists
@@ -159,13 +159,18 @@ class UnitTest:
 		
 		if self._is_enabled == True:
 			module = self._importModule(module)
+			
+			init_params = {}
+			if hasattr(module, 'memory'):
+				init_params = {'memory': self._memory}
 
-			init_params = {'memory': self._memory}
-			if hasattr(self._pooltest, 'init_params'):
-				init_params = {**init_params, **module.init_params}
 				
+			if hasattr(module, 'init_params'):
+				init_params = {**init_params, **module.init_params}
+			
 			self._pooltest = module(**init_params)
-
+			
+			
 			params = {}
 			if hasattr(self._pooltest, 'trigger_params'):
 				params = self._pooltest.trigger_params

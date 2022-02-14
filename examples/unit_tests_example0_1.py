@@ -20,7 +20,7 @@ def run():
 		# A list of unit test classes
 		[
 			step1_checkFileExist_success,
-			step2_NoOverride,
+			step2_NoOverride
 		],
 	])
 	

@@ -4,9 +4,9 @@ from unit_test_advanced.functools import initUT
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 '''
-	Injecting some data that will be different according from where the file is executed.
+	overrideing some data that will be different according from where the file is executed.
 	If the file is run directly, the content of "myfile.txt" is "actual api call".
-	However, when run from the unit test, the content is "fake api call". The function "fakeApiCall" from the class step2_InjectDataExample is actually executed instead of "imagineThisIsAnApiCall".
+	However, when run from the unit test, the content is "fake api call". The function "fakeApiCall" from the class step2_overrideDataExample is actually executed instead of "imagineThisIsAnApiCall".
 '''
 
 
@@ -21,14 +21,14 @@ def run(UT):
 	
 	f = open(f'{BASE_DIR}/myfile.txt', 'w+')
 	
-	is_injected = UT.inject(
-		'injectValue',
+	is_overrideed = UT.override(
+		'overrideValue',
 		UT.returnValue,
 		value= True
 	)
 	
 	f.write(
-		UT.inject(
+		UT.override(
 			'fakeApiCall',
 			imagineThisIsAnApiCall,
 			myParam = 'value to pass'

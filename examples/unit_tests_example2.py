@@ -70,7 +70,5 @@ def run():
 	for plan in UT.getExecutionPlans():
 		print(plan)
 	
-
-	
-	
-run()
+if __name__ == '__main__':
+	run()

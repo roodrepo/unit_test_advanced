@@ -5,7 +5,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(BASE_DIR)
 
 from scenarios import SCENARIO_1, SCENARIO_2
-from scenarios import resetWorkspace, step1_checkFileExist_success, step2_WithInjectedSimpleValue
+from scenarios import resetWorkspace, step2_WithOverrideSimpleValue, step1_checkFileExistUseMemory_success
 
 
 '''
@@ -27,8 +27,8 @@ def run():
 		# A list of unit test classes
 		[
 			resetWorkspace,
-			step1_checkFileExist_success,
-			step2_WithInjectedSimpleValue, # This test contains an example of how to use the memory
+			step1_checkFileExistUseMemory_success,
+			step2_WithOverrideSimpleValue, # This test contains an example of how to use the memory
 		],
 		# Variables containing a list of unit test classes
 		SCENARIO_1, # Unit test passed
@@ -36,4 +36,5 @@ def run():
 	])
 	
 	
-run()
+if __name__ == '__main__':
+	run()

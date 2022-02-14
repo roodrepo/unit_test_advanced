@@ -4,7 +4,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 sys.path.append(BASE_DIR)
 
-from scenarios import step1_checkFileExist_success, step2_NoOverride
+from scenarios import step1_checkFileExist_success, step2_overrideDataExample
 
 
 def run():
@@ -20,7 +20,7 @@ def run():
 		# A list of unit test classes
 		[
 			step1_checkFileExist_success,
-			step2_NoOverride,
+			step2_overrideDataExample,
 		],
 	])
 	

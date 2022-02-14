@@ -1,7 +1,7 @@
 Unit Test Advanced
 ==========
 
-## _The Python Unit Test Toolkit_
+## _The Python  Unit Test Toolkit_
 
 
 Unit Test Advanced is the Python testing toolkit and programmable execution plans. It makes it easy to write, test and scale complex applications and libraries.
@@ -14,7 +14,7 @@ This package gives you the flexibility to use the production code to run the tes
 - Program multiple execution plans
 - Pass values from one step to another within an execution plan
 - No code duplication; use production code to run tests
-- Inject custom data
+- Override with custom data
 - Auto-create execution plans from the relationship between all tests
 
 ## Advantages
@@ -140,8 +140,8 @@ UT.execute([
 |:-:|:-|
 | `__init__`  | |
 | `updateSettings`  | * Update the settings * |
-| `inject`  | * Inject data in the function triggered by the test-class * |
-| `returnValue`  | * Used when the value to inject is a single value * |
+| `override`  | * Inject data in the function triggered by the test-class * |
+| `returnValue`  | * Used when the value to override is a single value * |
 | `preparePlans`  | * Preparing all scenarios according to the settings and list passed * |
 | `getExecutionPlans`  | * Get all the execution plans prepared * |
 | `resetExecutionPlans`  | * Reset all the prepared execution plans * |
@@ -161,13 +161,13 @@ Execution plan algorithms:
 - ** main ** : If multiple dependencies or children, the algorithm select the first one
 - ** random ** : If multiple dependencies or children, the algorithm randomly select the path
 
-####inject
+####override
 | Argument | Type | Default | Description |
 |:-:|:-:|:-:|:-|
 | `id` | bool |  | * Method to execute within the test-class to override the original function * |
 | `function` | str |  | * Function to execute if the override method is not found within the test-class * |
-| `*args` | str |  | * Arguments to pass to the function and the override method * |
-| `**kwargs` | str |  | * Arguments to pass to the function and the override method * |
+| `*args` |  |  | * Arguments passed to the function and the override method * |
+| `**kwargs` |  |  | * Arguments passed to the function and the override method * |
 
 ####returnValue
 | Argument | Type | Default | Description |
@@ -217,15 +217,161 @@ if __name__ == '__main__':
 ```
 
 ## My first unit test
-In production, you have two actions triggered serially: [Step1](https://github.com/roodrepo/unit_test_advanced/blob/v0.1.0-dev/examples/step1.py) and [Step2](https://github.com/roodrepo/unit_test_advanced/blob/v0.1.0-dev/examples/step2.py).
+In production, you have two actions triggered serially: [Step1](https://github.com/roodrepo/unit_test_advanced/blob/v0-dev/examples/step1.py) and [Step2](https://github.com/roodrepo/unit_test_advanced/blob/v0-dev/examples/step2.py).
 For this example, we will keep things simple:
 
 | Action | Result | Verification  |
 |:-:|:-:|:-:|
 | `python step1.py` | File "myfile.txt" created | Does the file "myfile.txt" exist? |
-| `python step2.py` | Add the string "actual api call" in the file | Does the file contains the string "api"? |
+| `python step2.py` | Add response of a fake API call in the file | Does the file contains the string "result"? |
+
+When executing the file step2.py, the script prints out the content of the file at the end: * File content after executing step2.py: "{"result": "success"}" *
+
+#### Unit test for Step1
+```python
+import os
+from step1 import run as step1_run
+
+class step1_checkFileExist_success:
+	
+	# Function to execute to run the action to test
+	trigger = step1_run
+
+	def finalCheck(self):
+	
+		BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+		FILE_NAME = 'myfile.txt'
+		
+		if os.path.exists(f'{BASE_DIR}/{FILE_NAME}') == False:
+			raise BaseException(f'The file {FILE_NAME} is missing')
+```
+
+#### Unit test for Step2
+```python
+import os
+from step2 import run as step2_run
+
+class step2_NoOverride:
+	
+	trigger = step2_run
+	
+	def finalCheck(self):
+		
+		BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+		FILE_NAME = 'myfile.txt'
+		
+		f = open(f'{BASE_DIR}/{FILE_NAME}', 'r')
+		if 'result' not in f.read():
+			raise BaseException(f'Content invalid')
+```
+
+#### Execution plans file
+The actual example file can be found [here](https://github.com/roodrepo/unit_test_advanced/blob/v0-dev/examples/unit_tests_example0.py)
+
+----
+
+##### [Scenario 1](https://github.com/roodrepo/unit_test_advanced/blob/v0-dev/examples/unit_tests_example0_1.py): Test passed
+```python
+from unit_test_advanced.UnitTest import UnitTest
+import os, sys
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+sys.path.append(BASE_DIR)
+
+from scenarios import step1_checkFileExist_success, step2_NoOverride
 
 
+def run():
+	UT = UnitTest(
+		is_enabled              = True,  # Default is False. MUST be set to true here when we run the unit tests
+	)
+	
+	UT.execute([
+		# A list of unit test classes
+		[
+			step1_checkFileExist_success,
+			step2_NoOverride,
+		],
+	])
+	
+
+if __name__ == '__main__':
+	run()
+```
+
+> File content after executing step1.py: ""
+> File content after executing step2.py: "{"result": "success"}"
+
+----
+
+##### [Scenario 2](https://github.com/roodrepo/unit_test_advanced/blob/v0-dev/examples/unit_tests_example0_2.py): Override data & test passed
+```python
+from unit_test_advanced.UnitTest import UnitTest
+import os, sys
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+sys.path.append(BASE_DIR)
+
+from scenarios import step1_checkFileExist_success, step2_overrideDataExample
 
 
+def run():
+	UT = UnitTest(
+		is_enabled              = True,  # Default is False. MUST be set to true here when we run the unit tests
+	)
+	
+	UT.execute([
+		# A list of unit test classes
+		[
+			step1_checkFileExist_success,
+			step2_overrideDataExample,
+		],
+	])
+	
 
+if __name__ == '__main__':
+	run()
+```
+
+> File content after executing step1.py: ""
+> File content after executing step2.py: "{"result": " ** ok ** "}"
+
+----
+
+##### [Scenario 3](https://github.com/roodrepo/unit_test_advanced/blob/v0-dev/examples/unit_tests_example0_3.py): Override data & test failed
+```python
+from unit_test_advanced.UnitTest import UnitTest
+import os, sys
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+sys.path.append(BASE_DIR)
+
+from scenarios import step1_checkFileExist_success, step2_Override_fail
+
+
+def run():
+	UT = UnitTest(
+		is_enabled              = True,  # Default is False. MUST be set to true here when we run the unit tests
+	)
+	
+	UT.execute([
+		# A list of unit test classes
+		[
+			step1_checkFileExist_success,
+			step2_Override_fail,
+		],
+	])
+	
+
+if __name__ == '__main__':
+	run()
+```
+
+> File content after executing step1.py: ""
+> File content after executing step2.py: " ** {"code": 200} ** "
+> BaseException: Invalid API response
+
+## More scenarios
+##### [Scenario 4](https://github.com/roodrepo/unit_test_advanced/blob/v0-dev/examples/unit_tests_example0_4.py): override a value
+##### [Scenario 5](https://github.com/roodrepo/unit_test_advanced/blob/v0-dev/examples/unit_tests_example1.py): multiple execution plans
+##### [Scenario 6](https://github.com/roodrepo/unit_test_advanced/blob/v0-dev/examples/unit_tests_example2.py): create execution plans automatically based on dependencies
