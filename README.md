@@ -31,7 +31,7 @@ The easiest way to install the Unit Test Advanced library is to use a package ma
 
 ## Prepare the tests
 
-Examples can be found [here](https://github.com/roodrepo/unit_test_advanced/tree/v0.1/examples)
+Examples can be found [here](https://github.com/roodrepo/unit_test_advanced/tree/v0-dev/examples)
 
 ### Create a test class
 
@@ -96,8 +96,8 @@ class relationExample_lvl2_2:
 class relationExample_lvl3_1(UnitTestAction):
 	dependencies = [relationExample_lvl2_1]
 	
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+		def __init__(self, **kwargs):
+			super().__init__(**kwargs)
 ```
 
 ### Value assertation
@@ -122,8 +122,8 @@ class step1_checkFileExist_success(UnitTestAction, TestCase):
 In case you use the **\_\_init\_\_** method, do not forget to initialize the parents 
 ```python
 def __init__(self, *args, **kwargs):
-    super().__init__(*args, **kwargs)
-    # your code here
+		super().__init__(*args, **kwargs)
+		# your code here
 ```
 
 ### Execute scenarios
@@ -195,10 +195,10 @@ Execution plan algorithms:
 | `list_unit_tests` | list | [] | *Prepare all the execution plans from the list* |
 
 #### getExecutionPlans
-Does not require any attribute
+Does not have any attribute
 
 #### resetExecutionPlans
-Does not require any attribute
+Does not have any attribute
 
 #### execute
 | Argument | Type | Default | Description |
@@ -210,7 +210,19 @@ Does not require any attribute
 ```python
 from unit_test_advanced.functools import initUT
 
-# For each entry point, the function must accept the parameter UT
+@initUT
+def run():
+	pass
+
+if __name__ == '__main__':
+	run()
+```
+
+**If you need to inject custom data within the function, it needs to accept the parameter UT**
+
+```python
+from unit_test_advanced.functools import initUT
+
 @initUT
 def run(UT):
 	pass
@@ -231,8 +243,9 @@ if __name__ == '__main__':
 	run()
 ```
 
+
 ## My first unit test
-In production, you have two actions triggered serially: [Step1](https://github.com/roodrepo/unit_test_advanced/blob/v0.1/examples/step1.py) and [Step2](https://github.com/roodrepo/unit_test_advanced/blob/v0.1/examples/step2.py).
+In production, you have two actions triggered serially: [Step1](https://github.com/roodrepo/unit_test_advanced/blob/v0-dev/examples/step1.py) and [Step2](https://github.com/roodrepo/unit_test_advanced/blob/v0-dev/examples/step2.py).
 For this example, we will keep things simple:
 
 | Action | Result | Verification  |
@@ -281,11 +294,11 @@ class step2_NoOverride:
 ```
 
 #### Execution plans file
-The actual example file can be found [here](https://github.com/roodrepo/unit_test_advanced/blob/v0.1/examples/unit_tests_example0.py)
+The actual example file can be found [here](https://github.com/roodrepo/unit_test_advanced/blob/v0-dev/examples/unit_tests_example0.py)
 
 ----
 
-#### [Scenario 1](https://github.com/roodrepo/unit_test_advanced/blob/v0.1/examples/unit_tests_example0_1.py): Test passed
+##### [Scenario 1](https://github.com/roodrepo/unit_test_advanced/blob/v0-dev/examples/unit_tests_example0_1.py): Test passed
 ```python
 from unit_test_advanced.UnitTest import UnitTest
 import os, sys
@@ -319,7 +332,7 @@ if __name__ == '__main__':
 
 ----
 
-#### [Scenario 2](https://github.com/roodrepo/unit_test_advanced/blob/v0.1/examples/unit_tests_example0_2.py): Override data & test passed
+##### [Scenario 2](https://github.com/roodrepo/unit_test_advanced/blob/v0-dev/examples/unit_tests_example0_2.py): Override data & test passed
 ```python
 from unit_test_advanced.UnitTest import UnitTest
 import os, sys
@@ -353,7 +366,7 @@ if __name__ == '__main__':
 
 ----
 
-#### [Scenario 3](https://github.com/roodrepo/unit_test_advanced/blob/v0.1/examples/unit_tests_example0_3.py): Override data & test failed
+#### [Scenario 3](https://github.com/roodrepo/unit_test_advanced/blob/v0-dev/examples/unit_tests_example0_3.py): Override data & test failed
 ```python
 from unit_test_advanced.UnitTest import UnitTest
 import os, sys
@@ -387,6 +400,6 @@ if __name__ == '__main__':
 > BaseException: Invalid API response
 
 ## More scenarios
-#### [Scenario 4](https://github.com/roodrepo/unit_test_advanced/blob/v0.1/examples/unit_tests_example0_4.py): override a value
-#### [Scenario 5](https://github.com/roodrepo/unit_test_advanced/blob/v0.1/examples/unit_tests_example1.py): multiple execution plans
-#### [Scenario 6](https://github.com/roodrepo/unit_test_advanced/blob/v0.1/examples/unit_tests_example2.py): create execution plans automatically based on dependencies
+#### [Scenario 4](https://github.com/roodrepo/unit_test_advanced/blob/v0-dev/examples/unit_tests_example0_4.py): override a value
+#### [Scenario 5](https://github.com/roodrepo/unit_test_advanced/blob/v0-dev/examples/unit_tests_example1.py): multiple execution plans
+#### [Scenario 6](https://github.com/roodrepo/unit_test_advanced/blob/v0-dev/examples/unit_tests_example2.py): create execution plans automatically based on dependencies

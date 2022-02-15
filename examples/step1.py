@@ -9,7 +9,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # For each entry point, the function must accept the parameter UT
 @initUT
-def run(UT):
+def run():
 	
 	f = open(f'{BASE_DIR}/myfile.txt', 'w+')
 	f.close()
