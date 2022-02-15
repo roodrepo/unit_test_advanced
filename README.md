@@ -1,26 +1,25 @@
 Unit Test Advanced
 ==========
 
-## _The Python  Unit Test Toolkit_
+### *The Python  Unit Test Toolkit*
 
+Unit Test Advanced is the Python testing toolkit for programmable execution plans. It makes it easy to write, test and scale complex applications and libraries.
 
-Unit Test Advanced is the Python testing toolkit and programmable execution plans. It makes it easy to write, test and scale complex applications and libraries.
-
-This package gives you the flexibility to use the production code to run the tests, assert data at any time within the code, and inject custom data. Lightweight with no dependencies, you can use it on top of any other framework such as Django or Flask.
+This package gives you the flexibility to use the production code to run the tests, assert results at any time within the code, and inject custom data. Lightweight with no dependencies, it is compatible with any framework such as Django or Flask.
 
 
 ## Features
 
 - Program multiple execution plans
-- Pass values from one step to another within an execution plan
+- Pass values from one step to another
 - No code duplication; use production code to run tests
-- Override with custom data
+- Inject custom data
 - Auto-create execution plans from the relationship between all tests
 
 ## Advantages
 
 - Highly flexible
-- Lightweight and no dependency
+- Lightweight and independent
 - Open-source
 - Real use cases
 - Support & documentation
@@ -32,7 +31,7 @@ The easiest way to install the Unit Test Advanced library is to use a package ma
 
 ## Prepare the tests
 
-Examples can be found [here](https://github.com/roodrepo/unit_test_advanced/tree/v0.1.1/examples)
+Examples can be found [here](https://github.com/roodrepo/unit_test_advanced/tree/v0-dev/examples)
 
 ### Create a test class
 
@@ -50,35 +49,27 @@ class step1_checkFileExist_success(UnitTestAction):
     # Function to execute to run the action to test. 
 	trigger = step1_run # NOT step1_run()
 	
-	def __init__(self, **kwargs):
-		super().__init__(**kwargs)
-		
-		self.memory = {
-			'print_memory_message'  : False,
-			'value_in_memory'       : '######### This value is passed along all the classes of a plan and can be modified at any time'
-		}
-		
 	def final_check(self):
 		if os.path.exists(f'{BASE_DIR}/{FILE_NAME}') == False:
 			raise BaseException(f'The file {FILE_NAME} is missing')
 
 ```
 
-###Main attributes of a test class
+### Main attributes of a test class
 
 | Attribute  | Type | Required | Info |
 |:-:|:-:|:-:|:-|
-| `init_params`  | dict  | no | * Kwargs to pass to the test-class when instantiate * |
-| `trigger_params`  | dict  | no | * Kwargs to pass to trigger when executed * |
-| `trigger`  | function  | no | * Action to execute to run the action to test. * |
-| `dependencies`  | list  | no | * Previous test-classes required to run the current test (N-1) * |
-| `children`  | list  | no | * Next test-classes to run after the current test (N+1) * |
-| `memory`  | dict  | no | * Passing values from one test action to the next ones within the current execution plan * |
-| `finalCheck`  | method  | no | * Final method called when the action is complete * |
+| `init_params`  | dict  | no | *Kwargs to pass to the test-class when instantiated* |
+| `trigger_params`  | dict  | no | *Kwargs to pass to trigger when executed* |
+| `trigger`  | function  | no | *Action to execute to run the action to test.* |
+| `dependencies`  | list  | no | *Previous test-classes required to run the current test (Ns-1)* |
+| `children`  | list  | no | *Next test-classes to run after the current test (Ns+1)* |
+| `memory`  | dict  | no | *Passing values from one test action to the next ones within the same execution plan* |
+| `finalCheck`  | method  | no | *Final method called when the action is complete* |
 
-** Make sure not to execute function while passing it to "trigger":  **
+**Make sure not to execute function while passing it to "trigger":**
 `trigger = step1_run`
-** NOT **
+**NOT**
 `trigger = step1_run(*args, **kwargs)`
 
 #### Create relationships
@@ -91,8 +82,7 @@ class relationExample_lvl1_2:
 	children           = ['scenarios.relationExample_lvl1_2']
 	
 	
-
-
+	
 class relationExample_lvl2_1:
 	dependencies  = [relationExample_lvl1_1, relationExample_lvl1_2]
 	children           = ['scenarios.relationExample_lvl3_1']
@@ -102,8 +92,7 @@ class relationExample_lvl2_2:
 	
 	
 	
-	
-# Extending the class "UnitTestAction" gives more features such as memory
+# Extending the class "UnitTestAction" gives more features such as accessing the memory attribute
 class relationExample_lvl3_1(UnitTestAction):
 	dependencies = [relationExample_lvl2_1]
 	
@@ -111,7 +100,33 @@ class relationExample_lvl3_1(UnitTestAction):
 			super().__init__(**kwargs)
 ```
 
-### Execute your scenarios
+### Value assertation
+Extend your unit test class with the package of your choice
+```python
+from django.test import TestCase
+from unit_test_advanced.UnitTestAction import UnitTestAction
+import os, sys
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+sys.path.append(BASE_DIR)
+from step1 import run as step1_run
+		
+class step1_checkFileExist_success(UnitTestAction, TestCase):
+	
+	trigger = step1_run
+	
+	def final_check(self):
+		self.assertEqual(os.path.exists(f'{BASE_DIR}/{FILE_NAME}'), True)
+```
+In case you use the **\_\_init\_\_** method, do not forget to initialize the parents 
+```python
+def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		# your code here
+```
+
+### Execute scenarios
 ```python
 from unit_test_advanced.UnitTest import UnitTest
 
@@ -134,64 +149,64 @@ UT.execute([
 ])
 ```
 
-###UnitTest methods
+### UnitTest methods
 
 | Attribute | Description |
 |:-:|:-|
-| `__init__`  | |
-| `updateSettings`  | * Update the settings * |
-| `override`  | * Inject data in the function triggered by the test-class * |
-| `returnValue`  | * Used when the value to override is a single value * |
-| `preparePlans`  | * Preparing all scenarios according to the settings and list passed * |
-| `getExecutionPlans`  | * Get all the execution plans prepared * |
-| `resetExecutionPlans`  | * Reset all the prepared execution plans * |
-| `execute`  | * Execute all the unit-tests from the list * |
+| `__init__`  | *Init the settings*  |
+| `updateSettings`  | *Update the settings* |
+| `override`  | *Inject data in the function triggered by the test-class* |
+| `returnValue`  | *Used when overriding a single value* |
+| `preparePlans`  | *Preparing all scenarios according to the settings and list passed* |
+| `getExecutionPlans`  | *Get all the execution plans prepared* |
+| `resetExecutionPlans`  | *Reset all the prepared execution plans* |
+| `execute`  | *Execute all the unit tests from the list* |
 
-####\_\_init\_\_ and updateSettings
+#### \_\_init\_\_ and updateSettings
 | Argument | Type | Default | Description |
 |:-:|:-:|:-:|:-|
-| `is_enabled` | bool | False | * Set to "True" ** only ** when used to run the unit-tests * |
-| `parent_execution_plan` | str | all | * Algorithm to create the branches from on the dependencies side. Accepted values are "all", "main", and "random" * |
-| `children_execution_plan` | str | all | * Algorithm to create the branches from on the children side. Accepted values are "all", "main", and "random" * |
-| `count_limit_identify_infinite_loop` | int | 2 | * Max amount to execute a test-class within an execution plan * |
-| `verbose` | bool | False | * Display information when running * |
+| `is_enabled` | bool | False | *Set to "True" **only** when used to run the unit tests* |
+| `parent_execution_plan` | str | all | *Algorithm to create the branches from on the "dependencies" side. Accepted values are "all", "main", and "random"* |
+| `children_execution_plan` | str | all | *Algorithm to create the branches from on the "children" side. Accepted values are "all", "main", and "random"* |
+| `count_limit_identify_infinite_loop` | int | 2 | *Max amount of a test-class execution within an execution plan* |
+| `verbose` | bool | False | *Display information while running* |
 
 Execution plan algorithms:
-- ** all ** : All possible execution plans are prepared
-- ** main ** : If multiple dependencies or children, the algorithm select the first one
-- ** random ** : If multiple dependencies or children, the algorithm randomly select the path
+- **all**: All possible execution plans are prepared
+- **main**: If multiple dependencies or children, the algorithm select the first one
+- **random** : If multiple dependencies or children, the algorithm randomly select a path
 
-####override
+#### override
 | Argument | Type | Default | Description |
 |:-:|:-:|:-:|:-|
-| `id` | bool |  | * Method to execute within the test-class to override the original function * |
-| `function` | str |  | * Function to execute if the override method is not found within the test-class * |
-| `*args` |  |  | * Arguments passed to the function and the override method * |
-| `**kwargs` |  |  | * Arguments passed to the function and the override method * |
+| `id` | bool |  | *Method to execute within the test-class to override the original function* |
+| `function` | str |  | *Function to execute if the "id" method is not found within the test-class* |
+| `*args` |  |  | *Arguments passed to the function or the "id" method* |
+| `**kwargs` |  |  | *Arguments passed to the function or the "id" method* |
 
-####returnValue
+#### returnValue
 | Argument | Type | Default | Description |
 |:-:|:-:|:-:|:-|
-| `value` |  |  | * Return the value passed * |
+| `value` |  |  | *Return the value passed* |
 
-####preparePlans
+#### preparePlans
 | Argument | Type | Default | Description |
 |:-:|:-:|:-:|:-|
-| `list_unit_tests` | list | [] | * Prepare all the execution plans * |
+| `list_unit_tests` | list | [] | *Prepare all the execution plans from the list* |
 
-####getExecutionPlans
-Return all the execution plans ready to be executed
+#### getExecutionPlans
+Does not have any attribute
 
-####resetExecutionPlans
-Reset all the prepared execution plans
+#### resetExecutionPlans
+Does not have any attribute
 
-####execute
+#### execute
 | Argument | Type | Default | Description |
 |:-:|:-:|:-:|:-|
-| `list_unit_tests` | list | None | * Execute the prepared unit tests. The method "preparePlans" is not previously required if the list of plans is passed here.  * |
+| `list_unit_tests` | list | None | *Execute the prepared unit tests. The method "preparePlans" is not required if the list of plans is passed here.* |
 
-## Prepare the actions
-####With decorators
+## Prepare actions
+#### With decorators
 ```python
 from unit_test_advanced.functools import initUT
 
@@ -204,7 +219,7 @@ if __name__ == '__main__':
 	run()
 ```
 
-####Without decorators
+#### Without decorators
 ```python
 from unit_test_advanced.UnitTest import UnitTest
 
@@ -225,7 +240,7 @@ For this example, we will keep things simple:
 | `python step1.py` | File "myfile.txt" created | Does the file "myfile.txt" exist? |
 | `python step2.py` | Add response of a fake API call in the file | Does the file contains the string "result"? |
 
-When executing the file step2.py, the script prints out the content of the file at the end: * File content after executing step2.py: "{"result": "success"}" *
+When executing the file step2.py, the script prints out the content of the file at the end: *File content after executing step2.py: "{"result": "success"}"*
 
 #### Unit test for Step1
 ```python
@@ -298,7 +313,7 @@ def run():
 if __name__ == '__main__':
 	run()
 ```
-
+`python unit_tests_example0_1.py`
 > File content after executing step1.py: ""
 > File content after executing step2.py: "{"result": "success"}"
 
@@ -332,9 +347,9 @@ def run():
 if __name__ == '__main__':
 	run()
 ```
-
+`python unit_tests_example0_2.py`
 > File content after executing step1.py: ""
-> File content after executing step2.py: "{"result": " ** ok ** "}"
+> File content after executing step2.py: "{"result": "**ok** "}"
 
 ----
 
@@ -366,9 +381,9 @@ def run():
 if __name__ == '__main__':
 	run()
 ```
-
+`python unit_tests_example0_3.py`
 > File content after executing step1.py: ""
-> File content after executing step2.py: " ** {"code": 200} ** "
+> File content after executing step2.py: "**{"code": 200}**"
 > BaseException: Invalid API response
 
 ## More scenarios
