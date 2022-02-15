@@ -176,7 +176,10 @@ class UnitTest:
 				params = self._pooltest.trigger_params
 			
 			if hasattr(module, 'trigger'):
-				module.trigger(UT= self, **params)
+				if 'UT' in module.trigger.__code__.co_varnames:
+					params = {**params, 'UT': self}
+					
+				module.trigger(**params)
 			
 			if hasattr(self._pooltest, 'finalCheck'):
 				self._pooltest.finalCheck()
