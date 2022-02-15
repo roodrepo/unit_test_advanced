@@ -195,10 +195,10 @@ Execution plan algorithms:
 | `list_unit_tests` | list | [] | *Prepare all the execution plans from the list* |
 
 #### getExecutionPlans
-Does not have any attribute
+Does not require any attribute
 
 #### resetExecutionPlans
-Does not have any attribute
+Does not require any attribute
 
 #### execute
 | Argument | Type | Default | Description |
@@ -285,7 +285,7 @@ The actual example file can be found [here](https://github.com/roodrepo/unit_tes
 
 ----
 
-##### [Scenario 1](https://github.com/roodrepo/unit_test_advanced/blob/v0.1/examples/unit_tests_example0_1.py): Test passed
+#### [Scenario 1](https://github.com/roodrepo/unit_test_advanced/blob/v0.1/examples/unit_tests_example0_1.py): Test passed
 ```python
 from unit_test_advanced.UnitTest import UnitTest
 import os, sys
@@ -319,7 +319,7 @@ if __name__ == '__main__':
 
 ----
 
-##### [Scenario 2](https://github.com/roodrepo/unit_test_advanced/blob/v0.1/examples/unit_tests_example0_2.py): Override data & test passed
+#### [Scenario 2](https://github.com/roodrepo/unit_test_advanced/blob/v0.1/examples/unit_tests_example0_2.py): Override data & test passed
 ```python
 from unit_test_advanced.UnitTest import UnitTest
 import os, sys
@@ -353,7 +353,7 @@ if __name__ == '__main__':
 
 ----
 
-##### [Scenario 3](https://github.com/roodrepo/unit_test_advanced/blob/v0.1/examples/unit_tests_example0_3.py): Override data & test failed
+#### [Scenario 3](https://github.com/roodrepo/unit_test_advanced/blob/v0.1/examples/unit_tests_example0_3.py): Override data & test failed
 ```python
 from unit_test_advanced.UnitTest import UnitTest
 import os, sys
@@ -387,6 +387,6 @@ if __name__ == '__main__':
 > BaseException: Invalid API response
 
 ## More scenarios
-##### [Scenario 4](https://github.com/roodrepo/unit_test_advanced/blob/v0.1/examples/unit_tests_example0_4.py): override a value
-##### [Scenario 5](https://github.com/roodrepo/unit_test_advanced/blob/v0.1/examples/unit_tests_example1.py): multiple execution plans
-##### [Scenario 6](https://github.com/roodrepo/unit_test_advanced/blob/v0.1/examples/unit_tests_example2.py): create execution plans automatically based on dependencies
+#### [Scenario 4](https://github.com/roodrepo/unit_test_advanced/blob/v0.1/examples/unit_tests_example0_4.py): override a value
+#### [Scenario 5](https://github.com/roodrepo/unit_test_advanced/blob/v0.1/examples/unit_tests_example1.py): multiple execution plans
+#### [Scenario 6](https://github.com/roodrepo/unit_test_advanced/blob/v0.1/examples/unit_tests_example2.py): create execution plans automatically based on dependencies
