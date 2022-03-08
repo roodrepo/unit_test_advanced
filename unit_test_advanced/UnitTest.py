@@ -18,6 +18,7 @@ class UnitTest:
 	_loaded_plans            : list = []
 	
 	_verbose                 : bool
+	_log                     : bool
 	_is_enabled              : bool
 	_parent_execution_plan   : str
 	_children_execution_plan : str
@@ -61,8 +62,25 @@ class UnitTest:
 			if kwarg in updatable_settings:
 				setattr(self, f'_{kwarg}', value)
 	
-	
-	
+	def log(self, *args, level = 0):
+		'''
+			Print out texts when unit test mode is enabled
+		'''
+		
+		if self._log == True:
+			args = list(args)
+			
+			if level == 1:
+				args.insert(0, f'{"":4}')
+			elif level == 2:
+				args.insert(0, f'{"":8}')
+			elif level == 3:
+				args.insert(0, f'{"":12}')
+			elif level == 4:
+				args.insert(0, f'{"":16}')
+				
+			print(*args)
+			
 	def _print(self, *args, level = 0):
 		'''
 			Print out texts when verbose mode is enabled
@@ -164,6 +182,10 @@ class UnitTest:
 			if hasattr(module, 'memory'):
 				init_params = {'memory': self._memory}
 
+			self._log = True
+			if hasattr(module, 'log') and module.log == False:
+				self._log = False
+				
 				
 			if hasattr(module, 'init_params'):
 				init_params = {**init_params, **module.init_params}
