@@ -1,7 +1,7 @@
 Unit Test Advanced
 ==========
 
-### *The Python  Unit Test Toolkit*
+### *The Python Unit Test Toolkit*
 
 Unit Test Advanced is the Python testing toolkit for programmable execution plans. It makes it easy to write, test and scale complex applications and libraries.
 
@@ -23,6 +23,10 @@ This package gives you the flexibility to use the production code to run the tes
 - Open-source
 - Real use cases
 - Support & documentation
+
+## Authors
+
+- Rudy Fernandez
 
 ## Install
 The easiest way to install the Unit Test Advanced library is to use a package manager:
