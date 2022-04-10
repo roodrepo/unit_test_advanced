@@ -19,5 +19,12 @@ def run(UT):
 	print(f'File content after executing {os.path.basename(__file__)}: "{f.read()}"')
 	f.close()
 
+class Step4:
+	
+	@classmethod
+	def testfunc(cls, UT, a, b):
+		print(a, b)
+		
 if __name__ == '__main__':
-	run()
+	Step4.testfunc(1, 2)
+	# run()

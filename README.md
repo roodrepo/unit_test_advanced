@@ -247,6 +247,34 @@ if __name__ == '__main__':
 	run()
 ```
 
+#### With another parameter name
+```python
+from unit_test_advanced.functools import initUT
+from unit_test_advanced.UnitTest import UnitTest
+
+# Default value is 'UT'
+@initUT
+def test1(UT, a, b):
+	print('test1: ', type(UT), a, b)
+
+# Looking for the parameter with the type UnitTest
+@initUT
+def test2(UT_other_name: UnitTest, a, b):
+	print('test2: ', type(UT_other_name), a, b)
+	
+# Explicitly state the name
+@initUT('UT_other_name')
+def test3(UT_other_name, a, b):
+	print('test3: ', type(UT_other_name), UT_other_name._parent_execution_plan, a, b)
+
+if __name__ == '__main__':
+    test1(1, 2)
+    test2(1, 2)
+    test3(1, 2)
+    test3( UnitTest(parent_execution_plan= 'child'), 1, 2)
+    test3(UT_other_name= 'value is passed', a= 1, b= 2)
+```
+
 
 ## My first unit test
 In production, you have two actions triggered serially: [Step1](https://github.com/roodrepo/unit_test_advanced/blob/v0-dev/examples/step1.py) and [Step2](https://github.com/roodrepo/unit_test_advanced/blob/v0-dev/examples/step2.py).
