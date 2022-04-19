@@ -144,12 +144,12 @@ class UnitTest:
 	
 	
 	
-	def returnValue(self, value):
+	def returnValue(self, *values):
 		'''
-			Simply return the passed value. Useful when just a value needs to be faked out during unit test
+			Simply return the passed values. Useful when just a value needs to be faked out during unit test
 		'''
 		
-		return value
+		return values
 	
 	
 	def _checkInfiniteLoop(self, plans_list):
