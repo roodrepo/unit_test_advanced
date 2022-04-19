@@ -138,15 +138,24 @@ class UnitTest:
 		'''
 		
 		if self._is_enabled == True and hasattr(self._pooltest, id):
+			self._print('Method overridden:', id, level= 1)
+			
 			return getattr(self._pooltest, id)(*args, **kwargs)
 		else:
 			return function(*args, **kwargs)
 	
 	
 	
-	def returnValue(self, *values):
+	def returnValue(self, value):
 		'''
 			Simply return the passed values. Useful when just a value needs to be faked out during unit test
+		'''
+		
+		return value
+	
+	def returnValues(self, *values):
+		'''
+			Simply return the passed value. Useful when just a value needs to be faked out during unit test
 		'''
 		
 		return values
@@ -178,6 +187,11 @@ class UnitTest:
 		if self._is_enabled == True:
 			module = self._importModule(module)
 			
+			self._print('')
+			self._print('')
+			self._print('========= START:', module.__name__, '=========')
+			self._print('')
+			
 			init_params = {}
 			if hasattr(module, 'memory'):
 				init_params = {'memory': self._memory}
@@ -207,7 +221,10 @@ class UnitTest:
 			# Updating the memory attribute
 			if hasattr(self._pooltest, 'memory'):
 				self._memory = self._pooltest.memory
-	
+			
+			self._print('')
+			self._print('========= END:', module.__name__, '=========')
+			self._print('')
 	
 	
 	def _runExecutionPlan(self, execution_plan):
